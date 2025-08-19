@@ -22,10 +22,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                <CompanyLogo variant="white" textClassName="text-2xl font-bold" iconClassName="h-9 w-9" />
             </div>
             <p className="text-gray-400 mt-4 text-sm">Your next adventure starts here.</p>
-            <div className="flex space-x-4 mt-4">
-              <a href="https://www.youtube.com/@KaliyugaAdventure" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-gray-400 hover:text-white transition-colors"><Icon name="youtube" className="h-6 w-6" /></a>
-              <a href="https://www.linkedin.com/company/kaliyuga-adventure" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-gray-400 hover:text-white transition-colors"><Icon name="linkedin" className="h-6 w-6" /></a>
-              <a href="https://www.instagram.com/kaliyuga_adventure/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-gray-400 hover:text-white transition-colors"><Icon name="instagram" className="h-6 w-6" /></a>
+            <div className="mt-6">
+                <button onClick={() => onNavigate('login')} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+                    Admin Portal
+                </button>
             </div>
           </div>
           {/* Quick Links */}
@@ -36,6 +36,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li><button onClick={() => onNavigate('about')} className="text-gray-400 hover:text-white transition-colors">About Us</button></li>
               <li><button onClick={() => onNavigate('packages')} className="text-gray-400 hover:text-white transition-colors">Packages</button></li>
               <li><button onClick={() => onNavigate('contact')} className="text-gray-400 hover:text-white transition-colors">Contact</button></li>
+              <li><button onClick={() => onNavigate('customer-login')} className="text-gray-400 hover:text-white transition-colors">Sign In</button></li>
             </ul>
           </div>
           {/* Legal */}
@@ -61,6 +62,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   <span>kaliyugaadventure@gmail.com</span>
                 </li>
              </ul>
+             <div className="flex space-x-4 mt-6">
+              <a href="https://www.youtube.com/@KaliyugaAdventure" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-gray-400 hover:text-white transition-colors"><Icon name="youtube" className="h-6 w-6" /></a>
+              <a href="https://www.linkedin.com/company/kaliyuga-adventure" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-gray-400 hover:text-white transition-colors"><Icon name="linkedin" className="h-6 w-6" /></a>
+              <a href="https://www.instagram.com/kaliyuga_adventure/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-gray-400 hover:text-white transition-colors"><Icon name="instagram" className="h-6 w-6" /></a>
+            </div>
           </div>
         </div>
         <hr className="my-8 border-gray-700" />

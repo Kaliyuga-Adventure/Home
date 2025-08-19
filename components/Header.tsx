@@ -1,20 +1,34 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import type { Page } from '../types';
+import type { Page, Customer } from '../types';
 import { Icon } from './Icon';
 import { CompanyLogo } from './CompanyLogo';
 
 interface HeaderProps {
   currentPage: Page;
   setCurrentPage: (page: Page) => void;
-  isAuthenticated: boolean;
-  onLogout: () => void;
+  isAdminAuthenticated: boolean;
+  onAdminLogout: () => void;
+  isCustomerAuthenticated: boolean;
+  onCustomerLogout: () => void;
+  currentCustomer: Customer | null;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, isAuthenticated, onLogout }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+export const Header: React.FC<HeaderProps> = ({
+  currentPage,
+  setCurrentPage,
+  isAdminAuthenticated,
+  onAdminLogout,
+  isCustomerAuthenticated,
+  onCustomerLogout,
+  currentCustomer
+}) => {
+  const [isPolicyDropdownOpen, setIsPolicyDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const policyDropdownRef = useRef<HTMLDivElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
 
   const navItems: { id: Page; label: string; isAI?: boolean }[] = [
     { id: 'home', label: 'Home' },
@@ -34,12 +48,15 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, isA
     { id: 'admin', label: 'Dashboard' },
   ];
 
-  const currentNavItems = isAuthenticated ? adminNavItems : navItems;
+  const currentNavItems = isAdminAuthenticated ? adminNavItems : navItems;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
+      if (policyDropdownRef.current && !policyDropdownRef.current.contains(event.target as Node)) {
+        setIsPolicyDropdownOpen(false);
+      }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setIsUserDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -65,7 +82,8 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, isA
   };
   
   const handleMobileLogout = () => {
-    onLogout();
+    if (isAdminAuthenticated) onAdminLogout();
+    if (isCustomerAuthenticated) onCustomerLogout();
     setIsMobileMenuOpen(false);
   };
 
@@ -106,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, isA
             ))}
         </nav>
         <div className="mt-8 pt-6 border-t">
-           {isAuthenticated ? (
+           {isAdminAuthenticated || isCustomerAuthenticated ? (
             <button 
               onClick={handleMobileLogout}
               className="w-full bg-red-500 text-white font-semibold px-5 py-3 rounded-full hover:bg-red-600 transition-all duration-300 shadow-sm hover:shadow-md">
@@ -115,8 +133,8 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, isA
           ) : (
             <button 
               className="w-full bg-cyan-600 text-white font-semibold px-5 py-3 rounded-full hover:bg-cyan-700 transition-all duration-300 shadow-sm hover:shadow-md"
-              onClick={() => handleMobileNav('login')}>
-              Login
+              onClick={() => handleMobileNav('customer-login')}>
+              Sign In
             </button>
           )}
         </div>
@@ -152,23 +170,23 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, isA
                 )}
               </button>
             ))}
-            {!isAuthenticated && (
-              <div className="relative" ref={dropdownRef}>
+            {!isAdminAuthenticated && (
+              <div className="relative" ref={policyDropdownRef}>
                 <button
-                  onClick={() => setIsDropdownOpen(prev => !prev)}
+                  onClick={() => setIsPolicyDropdownOpen(prev => !prev)}
                   className="text-gray-600 hover:text-cyan-600 transition-colors duration-300 font-medium flex items-center"
                 >
                   <span>More</span>
                   <Icon name="chevronDown" className="h-4 w-4 ml-1" />
                 </button>
-                {isDropdownOpen && (
+                {isPolicyDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 animate-fade-in-fast">
                     {policyItems.map(item => (
                       <button
                         key={item.id}
                         onClick={() => {
                           setCurrentPage(item.id);
-                          setIsDropdownOpen(false);
+                          setIsPolicyDropdownOpen(false);
                         }}
                         className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                       >
@@ -181,17 +199,40 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, isA
             )}
           </nav>
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
+            {isAdminAuthenticated ? (
               <button 
-                onClick={onLogout}
+                onClick={onAdminLogout}
                 className="bg-red-500 text-white font-semibold px-5 py-2 rounded-full hover:bg-red-600 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
                 Logout
               </button>
+            ) : isCustomerAuthenticated ? (
+              <div className="relative" ref={userDropdownRef}>
+                <button
+                  onClick={() => setIsUserDropdownOpen(prev => !prev)}
+                  className="h-10 w-10 bg-cyan-600 text-white rounded-full flex items-center justify-center font-bold text-lg hover:bg-cyan-700 transition-all"
+                >
+                  {currentCustomer?.name.charAt(0).toUpperCase()}
+                </button>
+                 {isUserDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 animate-fade-in-fast">
+                      <div className="px-4 py-2 border-b">
+                        <p className="text-sm font-medium text-gray-900 truncate">{currentCustomer?.name}</p>
+                        <p className="text-sm text-gray-500 truncate">{currentCustomer?.email}</p>
+                      </div>
+                      <button
+                        onClick={() => { onCustomerLogout(); setIsUserDropdownOpen(false); }}
+                        className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                      >
+                        Logout
+                      </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <button 
                 className="bg-cyan-600 text-white font-semibold px-5 py-2 rounded-full hover:bg-cyan-700 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
-                onClick={() => setCurrentPage('login')}>
-                Login
+                onClick={() => setCurrentPage('customer-login')}>
+                Sign In
               </button>
             )}
           </div>

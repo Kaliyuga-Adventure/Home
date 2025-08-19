@@ -6,10 +6,10 @@ import { PackageList } from './components/PackageList';
 import { ContactForm } from './components/ContactForm';
 import { Footer } from './components/Footer';
 import { PackageDetail } from './components/PackageDetail';
-import { LoginPage } from './components/LoginPage';
+import { AdminLoginPage } from './components/LoginPage';
 import { AdminDashboard } from './components/AdminDashboard';
 import { allPackagesData } from './data/packages';
-import type { TravelPackage, Page } from './types';
+import type { TravelPackage, Page, Customer } from './types';
 import { AboutUsSnippet } from './components/AboutUsSnippet';
 import { WhyChooseUs } from './components/WhyChooseUs';
 import { AboutUsPage } from './components/AboutUsPage';
@@ -18,6 +18,9 @@ import { PrivacyPolicyPage } from './components/PrivacyPolicyPage';
 import { TermsAndConditionsPage } from './components/TermsAndConditionsPage';
 import { PaymentPolicyPage } from './components/PaymentPolicyPage';
 import { CancellationPolicyPage } from './components/CancellationPolicyPage';
+import { CustomerLoginPage } from './components/CustomerLoginPage';
+import { SignUpPage } from './components/SignUpPage';
+import { BasicDetailsPage } from './components/BasicDetailsPage';
 
 
 const App: React.FC = () => {
@@ -34,7 +37,9 @@ const App: React.FC = () => {
     }
   });
   
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [isCustomerAuthenticated, setIsCustomerAuthenticated] = useState(false);
+  const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
     try {
@@ -55,18 +60,45 @@ const App: React.FC = () => {
   
   useEffect(() => {
     // Redirect to login if trying to access admin page while not authenticated
-    if (currentPage === 'admin' && !isAuthenticated) {
+    if (currentPage === 'admin' && !isAdminAuthenticated) {
       setCurrentPage('login');
     }
-  }, [currentPage, isAuthenticated]);
+  }, [currentPage, isAdminAuthenticated]);
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
+  const handleAdminLogin = () => {
+    setIsAdminAuthenticated(true);
     setCurrentPage('admin');
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
+  const handleAdminLogout = () => {
+    setIsAdminAuthenticated(false);
+    setCurrentPage('home');
+  };
+
+  const handleCustomerLogin = (customer: Customer) => {
+    setIsCustomerAuthenticated(true);
+    setCurrentCustomer(customer);
+    setCurrentPage('home'); // or redirect to a customer dashboard
+  };
+
+  const handleCustomerLogout = () => {
+    setIsCustomerAuthenticated(false);
+    setCurrentCustomer(null);
+    setCurrentPage('home');
+  };
+  
+  const handleSignUp = (customer: Customer) => {
+    // In a real app, this would involve an API call.
+    // Here, we'll just set the basic customer info and ask for more details.
+    setIsCustomerAuthenticated(true);
+    setCurrentCustomer(customer);
+    setCurrentPage('basic-details');
+  };
+  
+  const handleSaveBasicDetails = (details: Omit<Customer, 'id' | 'email'>) => {
+    if (currentCustomer) {
+      setCurrentCustomer(prev => prev ? { ...prev, ...details } : null);
+    }
     setCurrentPage('home');
   };
 
@@ -103,6 +135,8 @@ const App: React.FC = () => {
       })
     );
   };
+  
+  const showHeaderAndFooter = !['login', 'customer-login', 'signup', 'basic-details'].includes(currentPage);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -140,7 +174,17 @@ const App: React.FC = () => {
       case 'cancellation-policy':
         return <CancellationPolicyPage />;
       case 'login':
-        return <LoginPage onLogin={handleLogin} />;
+        return <AdminLoginPage onLogin={handleAdminLogin} />;
+      case 'customer-login':
+        return <CustomerLoginPage onLogin={handleCustomerLogin} onNavigate={setCurrentPage} />;
+      case 'signup':
+        return <SignUpPage onSignUp={handleSignUp} onNavigate={setCurrentPage} />;
+      case 'basic-details':
+        if (!currentCustomer) {
+            setCurrentPage('signup');
+            return null;
+        }
+        return <BasicDetailsPage customer={currentCustomer} onSave={handleSaveBasicDetails} onNavigate={setCurrentPage} />;
       case 'admin':
         return (
           <AdminDashboard
@@ -157,18 +201,21 @@ const App: React.FC = () => {
 
   return (
     <>
-      {currentPage !== 'login' && (
+      {showHeaderAndFooter && (
         <Header
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
-          isAuthenticated={isAuthenticated}
-          onLogout={handleLogout}
+          isAdminAuthenticated={isAdminAuthenticated}
+          onAdminLogout={handleAdminLogout}
+          isCustomerAuthenticated={isCustomerAuthenticated}
+          onCustomerLogout={handleCustomerLogout}
+          currentCustomer={currentCustomer}
         />
       )}
       <main>
         {renderPage()}
       </main>
-      {currentPage !== 'login' && <Footer onNavigate={setCurrentPage} />}
+      {showHeaderAndFooter && <Footer onNavigate={setCurrentPage} />}
       {selectedPackage && (
         <PackageDetail 
           packageInfo={selectedPackage} 
