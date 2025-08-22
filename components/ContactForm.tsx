@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Icon } from './Icon';
 
@@ -49,6 +50,12 @@ export const ContactForm: React.FC = () => {
             <h3 className="text-2xl font-bold">Contact Us</h3>
             <p className="mt-2 text-cyan-100">Have questions? We'd love to hear from you.</p>
              <div className="mt-8 space-y-4">
+                <div className="flex items-start space-x-3">
+                  <Icon name="map-pin" className="h-5 w-5 flex-shrink-0 mt-1" />
+                  <a href="https://www.google.com/maps/search/?api=1&query=Kaliyuga+Adventure" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      Kaliyuga Adventure
+                  </a>
+                </div>
                 <div className="flex items-center space-x-3">
                   <Icon name="phone" className="h-5 w-5 flex-shrink-0" />
                   <span>+91 82177 12818</span>

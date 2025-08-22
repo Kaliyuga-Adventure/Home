@@ -57,6 +57,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, isCustomerAuthentica
           <div>
             <h3 className="font-semibold tracking-wider uppercase text-gray-300">Contact Us</h3>
              <ul className="mt-4 space-y-3 text-gray-400">
+                <li className="flex items-start space-x-3">
+                  <Icon name="map-pin" className="h-5 w-5 flex-shrink-0 mt-1" />
+                  <a href="https://www.google.com/maps/search/?api=1&query=Kaliyuga+Adventure" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                    Kaliyuga Adventure
+                  </a>
+                </li>
                <li className="flex items-start space-x-3">
                   <Icon name="phone" className="h-5 w-5 flex-shrink-0 mt-1" />
                   <span>+91 82177 12818</span>

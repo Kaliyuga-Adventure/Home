@@ -30,6 +30,12 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ destinationCount }) =>
               <p className="text-lg leading-8 text-gray-600">
                 A modern travel company born from a passion for exploration and a commitment to creating authentic, unforgettable journeys. We believe that travel is a powerful tool for connection—with new cultures, with nature, and with ourselves.
               </p>
+               <div className="mt-8 flex items-center gap-x-3">
+                <Icon name="map-pin" className="h-6 w-6 text-cyan-600 flex-shrink-0" />
+                <a href="https://www.google.com/maps/search/?api=1&query=Kaliyuga+Adventure" target="_blank" rel="noopener noreferrer" className="text-base font-semibold leading-7 text-gray-700 hover:text-gray-900">
+                  Kaliyuga Adventure
+                </a>
+              </div>
             </div>
             <img src="https://picsum.photos/seed/about/1920/1080" alt="" className="mt-10 aspect-[6/5] w-full max-w-lg rounded-2xl object-cover sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-36" />
           </div>
