@@ -1,16 +1,24 @@
+
 import React from 'react';
-import type { TravelPackage } from '../types';
+import type { TravelPackage, Page } from '../types';
 import { Icon } from './Icon';
 import { formatINR } from '../utils/formatting';
 
 interface PackageDetailProps {
   packageInfo: TravelPackage;
   onClose: () => void;
+  isCustomerAuthenticated: boolean;
+  setCurrentPage: (page: Page) => void;
 }
 
-export const PackageDetail: React.FC<PackageDetailProps> = ({ packageInfo, onClose }) => {
+export const PackageDetail: React.FC<PackageDetailProps> = ({ packageInfo, onClose, isCustomerAuthenticated, setCurrentPage }) => {
 
   const handleWhatsAppBooking = () => {
+    if (!isCustomerAuthenticated) {
+      setCurrentPage('customer-login');
+      onClose();
+      return;
+    }
     const phoneNumber = '918217712818'; // Company's WhatsApp number
     const message = `Hello Kaliyuga Adventure, I'm interested in booking the "${packageInfo.title}" package for a price of ${formatINR(packageInfo.price)}. Please provide me with more details.`;
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;

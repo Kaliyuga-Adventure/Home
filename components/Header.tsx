@@ -210,21 +210,34 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   onClick={() => setIsUserDropdownOpen(prev => !prev)}
                   className="h-10 w-10 bg-cyan-600 text-white rounded-full flex items-center justify-center font-bold text-lg hover:bg-cyan-700 transition-all"
+                  aria-label="User menu"
+                  aria-haspopup="true"
+                  aria-expanded={isUserDropdownOpen}
                 >
                   {currentCustomer?.name.charAt(0).toUpperCase()}
                 </button>
                  {isUserDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 animate-fade-in-fast">
-                      <div className="px-4 py-2 border-b">
-                        <p className="text-sm font-medium text-gray-900 truncate">{currentCustomer?.name}</p>
-                        <p className="text-sm text-gray-500 truncate">{currentCustomer?.email}</p>
+                      <div className="px-4 py-3 border-b">
+                        <p className="text-sm font-medium text-gray-900 truncate" title={currentCustomer?.name}>{currentCustomer?.name}</p>
+                        <p className="text-sm text-gray-500 truncate" title={currentCustomer?.email}>{currentCustomer?.email}</p>
                       </div>
-                      <button
-                        onClick={() => { onCustomerLogout(); setIsUserDropdownOpen(false); }}
-                        className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                      >
-                        Logout
-                      </button>
+                      <div className="py-1">
+                        <button
+                          onClick={() => { setCurrentPage('profile'); setIsUserDropdownOpen(false); }}
+                          className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                        >
+                          <Icon name="user" className="h-5 w-5 text-gray-500"/>
+                          <span>My Profile</span>
+                        </button>
+                        <button
+                          onClick={() => { onCustomerLogout(); setIsUserDropdownOpen(false); }}
+                          className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                        >
+                          <Icon name="arrowLeft" className="h-5 w-5 text-gray-500"/>
+                          <span>Sign Out</span>
+                        </button>
+                      </div>
                   </div>
                 )}
               </div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Icon } from './Icon';
 import type { Page } from '../types';
@@ -5,10 +6,11 @@ import { CompanyLogo } from './CompanyLogo';
 
 interface FooterProps {
   onNavigate: (page: Page) => void;
+  isCustomerAuthenticated: boolean;
 }
 
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigate, isCustomerAuthenticated }) => {
   return (
     <footer className="bg-gray-800 text-white">
       <div className="container mx-auto px-6 py-12">
@@ -23,9 +25,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </div>
             <p className="text-gray-400 mt-4 text-sm">Your next adventure starts here.</p>
             <div className="mt-6">
-                <button onClick={() => onNavigate('login')} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
-                    Admin Portal
-                </button>
+                {!isCustomerAuthenticated && (
+                  <button onClick={() => onNavigate('login')} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+                      Admin Portal
+                  </button>
+                )}
             </div>
           </div>
           {/* Quick Links */}

@@ -15,7 +15,7 @@ export interface TravelPackage {
   featuredOrder?: number;
 }
 
-export type Page = 'home' | 'packages' | 'about' | 'contact' | 'login' | 'admin' | 'privacy-policy' | 'terms-and-conditions' | 'payment-policy' | 'cancellation-policy' | 'customer-login' | 'signup' | 'basic-details';
+export type Page = 'home' | 'packages' | 'about' | 'contact' | 'login' | 'admin' | 'privacy-policy' | 'terms-and-conditions' | 'payment-policy' | 'cancellation-policy' | 'customer-login' | 'signup' | 'basic-details' | 'otp-verification' | 'profile';
 
 export interface Testimonial {
   name: string;
@@ -31,4 +31,10 @@ export interface Customer {
     mobile?: string;
     age?: number;
     sex?: 'Male' | 'Female' | 'Other' | 'Prefer not to say';
+}
+
+export interface SlideshowImage {
+  id: string;
+  src: string;
+  alt: string;
 }

@@ -9,7 +9,8 @@ import { PackageDetail } from './components/PackageDetail';
 import { AdminLoginPage } from './components/LoginPage';
 import { AdminDashboard } from './components/AdminDashboard';
 import { allPackagesData } from './data/packages';
-import type { TravelPackage, Page, Customer } from './types';
+import { initialSlideshowData } from './data/slideshow';
+import type { TravelPackage, Page, Customer, SlideshowImage } from './types';
 import { AboutUsSnippet } from './components/AboutUsSnippet';
 import { WhyChooseUs } from './components/WhyChooseUs';
 import { AboutUsPage } from './components/AboutUsPage';
@@ -21,11 +22,18 @@ import { CancellationPolicyPage } from './components/CancellationPolicyPage';
 import { CustomerLoginPage } from './components/CustomerLoginPage';
 import { SignUpPage } from './components/SignUpPage';
 import { BasicDetailsPage } from './components/BasicDetailsPage';
+import { OtpVerificationPage } from './components/OtpVerificationPage';
+import { ProfilePage } from './components/ProfilePage';
 
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [currentPage, _setCurrentPage] = useState<Page>('home');
   const [selectedPackage, setSelectedPackage] = useState<TravelPackage | null>(null);
+  
+  const setCurrentPage = (page: Page) => {
+    _setCurrentPage(page);
+    window.scrollTo(0, 0);
+  };
   
   const [packages, setPackages] = useState<TravelPackage[]>(() => {
     try {
@@ -37,9 +45,21 @@ const App: React.FC = () => {
     }
   });
   
+  const [slideshowImages, setSlideshowImages] = useState<SlideshowImage[]>(() => {
+    try {
+      const storedSlides = localStorage.getItem('kaliyugaAdventureSlideshow');
+      return storedSlides ? JSON.parse(storedSlides) : initialSlideshowData;
+    } catch (error) {
+      console.error("Could not parse slideshow images from localStorage, using default.", error);
+      return initialSlideshowData;
+    }
+  });
+
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [isCustomerAuthenticated, setIsCustomerAuthenticated] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
+  const [pendingCustomer, setPendingCustomer] = useState<Pick<Customer, 'name' | 'email'> | null>(null);
+
 
   useEffect(() => {
     try {
@@ -49,6 +69,14 @@ const App: React.FC = () => {
       console.error("Could not save packages to localStorage", error);
     }
   }, [packages]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kaliyugaAdventureSlideshow', JSON.stringify(slideshowImages));
+    } catch (error) {
+      console.error("Could not save slideshow images to localStorage", error);
+    }
+  }, [slideshowImages]);
 
   useEffect(() => {
     if (selectedPackage) {
@@ -87,19 +115,33 @@ const App: React.FC = () => {
     setCurrentPage('home');
   };
   
-  const handleSignUp = (customer: Customer) => {
-    // In a real app, this would involve an API call.
-    // Here, we'll just set the basic customer info and ask for more details.
-    setIsCustomerAuthenticated(true);
-    setCurrentCustomer(customer);
-    setCurrentPage('basic-details');
+  const handleSignUp = (customerData: Pick<Customer, 'name' | 'email'>) => {
+    // In a real app, this would trigger sending an OTP via an API.
+    // Here, we'll just store the pending customer and move to the verification page.
+    setPendingCustomer(customerData);
+    setCurrentPage('otp-verification');
+  };
+
+  const handleOtpVerification = (otp: string): boolean => {
+    // Hardcoded OTP for demonstration. In a real app, verify against the backend.
+    if (otp === '123456' && pendingCustomer) {
+      const newCustomer: Customer = {
+        id: Date.now(),
+        ...pendingCustomer,
+      };
+      setIsCustomerAuthenticated(true);
+      setCurrentCustomer(newCustomer);
+      setPendingCustomer(null);
+      setCurrentPage('basic-details'); // Redirect to profile completion
+      return true;
+    }
+    return false;
   };
   
-  const handleSaveBasicDetails = (details: Omit<Customer, 'id' | 'email'>) => {
+  const handleUpdateCustomerDetails = (details: Partial<Omit<Customer, 'id' | 'email'>>) => {
     if (currentCustomer) {
       setCurrentCustomer(prev => prev ? { ...prev, ...details } : null);
     }
-    setCurrentPage('home');
   };
 
   const handleDeletePackage = (id: number) => {
@@ -136,7 +178,11 @@ const App: React.FC = () => {
     );
   };
   
-  const showHeaderAndFooter = !['login', 'customer-login', 'signup', 'basic-details'].includes(currentPage);
+  const handleSaveSlideshowImages = (images: SlideshowImage[]) => {
+    setSlideshowImages(images);
+  };
+
+  const showHeaderAndFooter = !['login', 'customer-login', 'signup', 'otp-verification', 'basic-details'].includes(currentPage);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -146,7 +192,7 @@ const App: React.FC = () => {
           .sort((a, b) => (a.featuredOrder ?? 99) - (b.featuredOrder ?? 99));
         return (
           <>
-            <Hero onExplore={() => setCurrentPage('packages')} />
+            <Hero onExplore={() => setCurrentPage('packages')} slides={slideshowImages} />
             <AboutUsSnippet />
             <PackageList 
               packages={featuredPackages} 
@@ -179,12 +225,27 @@ const App: React.FC = () => {
         return <CustomerLoginPage onLogin={handleCustomerLogin} onNavigate={setCurrentPage} />;
       case 'signup':
         return <SignUpPage onSignUp={handleSignUp} onNavigate={setCurrentPage} />;
+       case 'otp-verification':
+        if (!pendingCustomer) {
+            setCurrentPage('signup');
+            return null;
+        }
+        return <OtpVerificationPage email={pendingCustomer.email} onVerify={handleOtpVerification} onNavigate={setCurrentPage} />;
       case 'basic-details':
         if (!currentCustomer) {
             setCurrentPage('signup');
             return null;
         }
-        return <BasicDetailsPage customer={currentCustomer} onSave={handleSaveBasicDetails} onNavigate={setCurrentPage} />;
+        return <BasicDetailsPage customer={currentCustomer} onSave={(details) => {
+            handleUpdateCustomerDetails(details);
+            setCurrentPage('home');
+        }} onNavigate={setCurrentPage} />;
+      case 'profile':
+        if (!currentCustomer) {
+            setCurrentPage('customer-login');
+            return null;
+        }
+        return <ProfilePage customer={currentCustomer} onSave={handleUpdateCustomerDetails} onNavigate={setCurrentPage} />;
       case 'admin':
         return (
           <AdminDashboard
@@ -192,6 +253,8 @@ const App: React.FC = () => {
             onSave={handleSavePackage}
             onDelete={handleDeletePackage}
             onSaveHomepageLayout={handleSaveHomepageLayout}
+            slideshowImages={slideshowImages}
+            onSaveSlideshowImages={handleSaveSlideshowImages}
           />
         );
       default:
@@ -215,11 +278,13 @@ const App: React.FC = () => {
       <main>
         {renderPage()}
       </main>
-      {showHeaderAndFooter && <Footer onNavigate={setCurrentPage} />}
+      {showHeaderAndFooter && <Footer onNavigate={setCurrentPage} isCustomerAuthenticated={isCustomerAuthenticated} />}
       {selectedPackage && (
         <PackageDetail 
           packageInfo={selectedPackage} 
           onClose={() => setSelectedPackage(null)} 
+          isCustomerAuthenticated={isCustomerAuthenticated}
+          setCurrentPage={setCurrentPage}
         />
       )}
     </>

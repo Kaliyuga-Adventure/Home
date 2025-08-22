@@ -4,7 +4,7 @@ import { CompanyLogo } from './CompanyLogo';
 import type { Customer, Page } from '../types';
 
 interface SignUpPageProps {
-  onSignUp: (customer: Customer) => void;
+  onSignUp: (customer: Pick<Customer, 'name' | 'email'>) => void;
   onNavigate: (page: Page) => void;
 }
 
@@ -37,7 +37,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp, onNavigate }) 
       return;
     }
     if (name && email && password) {
-      onSignUp({ id: Date.now(), name, email });
+      onSignUp({ name, email });
     } else {
       setError('Please fill in all fields.');
     }

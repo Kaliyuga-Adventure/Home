@@ -5,7 +5,7 @@ import type { Customer, Page } from '../types';
 
 interface BasicDetailsPageProps {
   customer: Customer;
-  onSave: (details: Omit<Customer, 'id' | 'email'>) => void;
+  onSave: (details: Partial<Omit<Customer, 'id' | 'email'>>) => void;
   onNavigate: (page: Page) => void;
 }
 

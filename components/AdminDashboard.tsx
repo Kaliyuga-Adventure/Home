@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import type { TravelPackage } from '../types';
+import type { TravelPackage, SlideshowImage } from '../types';
 import { PackageForm } from './PackageForm';
 import { HomePageEditor } from './HomePageEditor';
+import { SlideshowEditor } from './SlideshowEditor';
 import { Icon } from './Icon';
 import { formatINR } from '../utils/formatting';
 
@@ -11,10 +12,12 @@ interface AdminDashboardProps {
   onSave: (pkg: Omit<TravelPackage, 'id'> & { id?: number }) => void;
   onDelete: (id: number) => void;
   onSaveHomepageLayout: (ids: number[]) => void;
+  slideshowImages: SlideshowImage[];
+  onSaveSlideshowImages: (images: SlideshowImage[]) => void;
 }
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ packages, onSave, onDelete, onSaveHomepageLayout }) => {
-  const [view, setView] = useState<'list' | 'form' | 'homepage'>('list');
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ packages, onSave, onDelete, onSaveHomepageLayout, slideshowImages, onSaveSlideshowImages }) => {
+  const [view, setView] = useState<'list' | 'form' | 'homepage' | 'slideshow'>('list');
   const [editingPackage, setEditingPackage] = useState<TravelPackage | null>(null);
   const [packageToDelete, setPackageToDelete] = useState<TravelPackage | null>(null);
 
@@ -44,11 +47,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ packages, onSave
     setView('list');
   };
 
+  const handleSaveSlideshowAndSwitchView = (images: SlideshowImage[]) => {
+    onSaveSlideshowImages(images);
+    setView('list');
+  };
+
   const PackageTable = () => (
     <>
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
         <h2 className="text-3xl font-bold text-gray-800">Content Management</h2>
          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <button
+              onClick={() => setView('slideshow')}
+              className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
+            >
+              <Icon name="image" className="h-5 w-5" />
+              <span>Edit Slideshow</span>
+            </button>
             <button
               onClick={() => setView('homepage')}
               className="bg-green-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
@@ -115,6 +130,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ packages, onSave
         <HomePageEditor
           packages={packages}
           onSave={handleSaveHomepageAndSwitchView}
+          onCancel={() => setView('list')}
+        />
+      )}
+      {view === 'slideshow' && (
+        <SlideshowEditor
+          initialSlides={slideshowImages}
+          onSave={handleSaveSlideshowAndSwitchView}
           onCancel={() => setView('list')}
         />
       )}
