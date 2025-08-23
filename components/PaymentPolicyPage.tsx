@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LegalPageLayout } from './LegalPageLayout';
 
@@ -15,9 +14,11 @@ export const PaymentPolicyPage: React.FC = () => {
       
       <h2>3. Methods of Payment</h2>
       <p>We accept the following methods of payment:</p>
-      <p><strong>Bank Transfer:</strong> Details will be provided upon booking.</p>
-      <p><strong>Cards:</strong> Credit/Debit Cards (Visa, MasterCard) via a secure online payment gateway.</p>
-      <p><strong>UPI:</strong> We accept UPI Payments.</p>
+      <ul>
+        <li><strong>Bank Transfer:</strong> Details will be provided upon booking.</li>
+        <li><strong>Cards:</strong> Credit/Debit Cards (Visa, MasterCard) via a secure online payment gateway.</li>
+        <li><strong>UPI:</strong> We accept UPI Payments.</li>
+      </ul>
       <p><strong>Additional Fees:</strong> Please note that any bank charges or credit card processing fees are to be borne by the customer.</p>
 
       <h2>4. Pricing</h2>

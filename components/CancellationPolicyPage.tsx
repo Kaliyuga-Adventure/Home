@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LegalPageLayout } from './LegalPageLayout';
 
@@ -9,10 +8,12 @@ export const CancellationPolicyPage: React.FC = () => {
       
       <h2>Cancellation Charges</h2>
       <p>The following cancellation charges will apply based on the number of days before your departure date that we receive your cancellation notice:</p>
-      <p><strong>More than 60 days before departure:</strong> Loss of deposit.</p>
-      <p><strong>Between 60 and 31 days before departure:</strong> 50% of the total booking cost.</p>
-      <p><strong>Between 30 and 15 days before departure:</strong> 75% of the total booking cost.</p>
-      <p><strong>Less than 15 days before departure:</strong> 100% of the total booking cost (no refund).</p>
+      <ul>
+        <li><strong>More than 60 days before departure:</strong> Loss of deposit.</li>
+        <li><strong>Between 60 and 31 days before departure:</strong> 50% of the total booking cost.</li>
+        <li><strong>Between 30 and 15 days before departure:</strong> 75% of the total booking cost.</li>
+        <li><strong>Less than 15 days before departure:</strong> 100% of the total booking cost (no refund).</li>
+      </ul>
 
       <h2>Unused Services</h2>
       <p><strong>No Refunds:</strong> No refunds or exchanges can be made for any unused portion of the tour, including accommodation, meals, or activities, once the tour has commenced.</p>

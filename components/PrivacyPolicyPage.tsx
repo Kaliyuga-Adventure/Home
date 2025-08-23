@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LegalPageLayout } from './LegalPageLayout';
 
@@ -18,13 +17,15 @@ export const PrivacyPolicyPage: React.FC = () => {
       <p><strong>Lawful Basis:</strong> We will process your personal information lawfully, fairly and in a transparent manner. We collect and process information about you only where we have legal bases for doing so.</p>
 
       <h2>3. Use of Information</h2>
-      <p>We may use the information we collect for various purposes:</p>
-      <p><strong>Service Delivery:</strong> To provide, operate, and maintain our website and services.</p>
-      <p><strong>Improvement:</strong> To improve, personalize, and expand our website and offerings.</p>
-      <p><strong>Analytics:</strong> To understand and analyze how you use our website.</p>
-      <p><strong>Development:</strong> To develop new products, services, features, and functionality.</p>
-      <p><strong>Communication:</strong> To communicate with you for customer service, updates, and marketing purposes.</p>
-      <p><strong>Fraud Prevention:</strong> To find and prevent fraud.</p>
+      <p>We may use the information we collect for various purposes, including to:</p>
+      <ul>
+        <li><strong>Service Delivery:</strong> Provide, operate, and maintain our website and services.</li>
+        <li><strong>Improvement:</strong> Improve, personalize, and expand our website and offerings.</li>
+        <li><strong>Analytics:</strong> Understand and analyze how you use our website.</li>
+        <li><strong>Development:</strong> Develop new products, services, features, and functionality.</li>
+        <li><strong>Communication:</strong> Communicate with you for customer service, updates, and marketing purposes.</li>
+        <li><strong>Fraud Prevention:</strong> Find and prevent fraud.</li>
+      </ul>
       
 
       <h2>4. Security of Your Personal Information</h2>
