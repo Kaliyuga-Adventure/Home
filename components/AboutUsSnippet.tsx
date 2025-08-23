@@ -1,11 +1,17 @@
+
 import React from 'react';
 import { Icon } from './Icon';
+import type { SiteStats } from '../types';
 
-export const AboutUsSnippet: React.FC = () => {
-  const stats = [
-    { value: '250+', label: 'Happy Travelers', icon: 'emoji-happy' },
-    { value: '50+', label: 'Destinations Explored', icon: 'map' },
-    { value: '100+', label: 'Successful Trips', icon: 'briefcase' },
+interface AboutUsSnippetProps {
+  stats: SiteStats;
+}
+
+export const AboutUsSnippet: React.FC<AboutUsSnippetProps> = ({ stats }) => {
+  const displayStats = [
+    { value: stats.happyTravelers, label: 'Happy Travelers', icon: 'emoji-happy' },
+    { value: stats.destinationsExplored, label: 'Destinations Explored', icon: 'map' },
+    { value: stats.successfulTrips, label: 'Successful Trips', icon: 'briefcase' },
   ];
 
   return (
@@ -23,7 +29,7 @@ export const AboutUsSnippet: React.FC = () => {
 
         <div className="mt-16">
           <dl className="grid grid-cols-1 gap-y-12 md:grid-cols-3 md:gap-x-8 md:gap-y-16 text-center">
-            {stats.map((stat) => (
+            {displayStats.map((stat) => (
               <div key={stat.label} className="flex flex-col items-center">
                 <dt className="flex items-center text-gray-600">
                   <Icon name={stat.icon as any} className="h-10 w-10 text-cyan-600" />

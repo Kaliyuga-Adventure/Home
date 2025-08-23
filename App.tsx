@@ -10,7 +10,9 @@ import { AdminLoginPage } from './components/LoginPage';
 import { AdminDashboard } from './components/AdminDashboard';
 import { allPackagesData } from './data/packages';
 import { initialSlideshowData } from './data/slideshow';
-import type { TravelPackage, Page, Customer, SlideshowImage } from './types';
+import { initialTestimonialsData } from './data/testimonials';
+import { initialSiteStats } from './data/site';
+import type { TravelPackage, Page, Customer, SlideshowImage, Testimonial, SiteStats } from './types';
 import { AboutUsSnippet } from './components/AboutUsSnippet';
 import { WhyChooseUs } from './components/WhyChooseUs';
 import { AboutUsPage } from './components/AboutUsPage';
@@ -55,6 +57,26 @@ const App: React.FC = () => {
     }
   });
 
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => {
+    try {
+      const stored = localStorage.getItem('kaliyugaAdventureTestimonials');
+      return stored ? JSON.parse(stored) : initialTestimonialsData;
+    } catch (error) {
+      console.error("Could not parse testimonials from localStorage, using default.", error);
+      return initialTestimonialsData;
+    }
+  });
+
+  const [siteStats, setSiteStats] = useState<SiteStats>(() => {
+    try {
+      const stored = localStorage.getItem('kaliyugaAdventureSiteStats');
+      return stored ? JSON.parse(stored) : initialSiteStats;
+    } catch (error) {
+      console.error("Could not parse site stats from localStorage, using default.", error);
+      return initialSiteStats;
+    }
+  });
+
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [isCustomerAuthenticated, setIsCustomerAuthenticated] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
@@ -63,7 +85,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     try {
-      // Persist the packages state to localStorage whenever it changes.
       localStorage.setItem('kaliyugaAdventurePackages', JSON.stringify(packages));
     } catch (error) {
       console.error("Could not save packages to localStorage", error);
@@ -77,6 +98,22 @@ const App: React.FC = () => {
       console.error("Could not save slideshow images to localStorage", error);
     }
   }, [slideshowImages]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kaliyugaAdventureTestimonials', JSON.stringify(testimonials));
+    } catch (error) {
+      console.error("Could not save testimonials to localStorage", error);
+    }
+  }, [testimonials]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kaliyugaAdventureSiteStats', JSON.stringify(siteStats));
+    } catch (error) {
+      console.error("Could not save site stats to localStorage", error);
+    }
+  }, [siteStats]);
 
   useEffect(() => {
     if (selectedPackage) {
@@ -116,14 +153,11 @@ const App: React.FC = () => {
   };
   
   const handleSignUp = (customerData: Pick<Customer, 'name' | 'email'>) => {
-    // In a real app, this would trigger sending an OTP via an API.
-    // Here, we'll just store the pending customer and move to the verification page.
     setPendingCustomer(customerData);
     setCurrentPage('otp-verification');
   };
 
   const handleOtpVerification = (otp: string): boolean => {
-    // Hardcoded OTP for demonstration. In a real app, verify against the backend.
     if (otp === '123456' && pendingCustomer) {
       const newCustomer: Customer = {
         id: Date.now(),
@@ -132,7 +166,7 @@ const App: React.FC = () => {
       setIsCustomerAuthenticated(true);
       setCurrentCustomer(newCustomer);
       setPendingCustomer(null);
-      setCurrentPage('basic-details'); // Redirect to profile completion
+      setCurrentPage('basic-details'); 
       return true;
     }
     return false;
@@ -150,10 +184,8 @@ const App: React.FC = () => {
 
   const handleSavePackage = (pkg: Omit<TravelPackage, 'id'> & { id?: number }) => {
     if (pkg.id) {
-      // Edit existing
       setPackages(prev => prev.map(p => p.id === pkg.id ? { ...p, ...pkg } as TravelPackage : p));
     } else {
-      // Add new
       const newId = packages.length > 0 ? Math.max(...packages.map(p => p.id)) + 1 : 1;
       const newPackage: TravelPackage = { ...pkg, id: newId };
       setPackages(prev => [...prev, newPackage]);
@@ -165,14 +197,11 @@ const App: React.FC = () => {
       prev.map(p => {
         const featuredIndex = featuredIds.indexOf(p.id);
         if (featuredIndex !== -1) {
-          // It's a featured package
           return { ...p, isFeatured: true, featuredOrder: featuredIndex + 1 };
         } else if (p.isFeatured) {
-          // It's no longer featured, so we remove the properties
           const { isFeatured, featuredOrder, ...rest } = p;
           return rest as TravelPackage;
         }
-        // Not featured and wasn't featured, return as is.
         return p;
       })
     );
@@ -180,6 +209,14 @@ const App: React.FC = () => {
   
   const handleSaveSlideshowImages = (images: SlideshowImage[]) => {
     setSlideshowImages(images);
+  };
+  
+  const handleSaveTestimonials = (updatedTestimonials: Testimonial[]) => {
+    setTestimonials(updatedTestimonials);
+  };
+
+  const handleSaveSiteStats = (updatedStats: SiteStats) => {
+    setSiteStats(updatedStats);
   };
 
   const showHeaderAndFooter = !['login', 'customer-login', 'signup', 'otp-verification', 'basic-details'].includes(currentPage);
@@ -193,7 +230,7 @@ const App: React.FC = () => {
         return (
           <>
             <Hero onExplore={() => setCurrentPage('packages')} slides={slideshowImages} />
-            <AboutUsSnippet />
+            <AboutUsSnippet stats={siteStats} />
             <PackageList 
               packages={featuredPackages} 
               onViewDetails={setSelectedPackage}
@@ -201,11 +238,11 @@ const App: React.FC = () => {
               showFilters={false}
             />
             <WhyChooseUs />
-            <Testimonials />
+            <Testimonials testimonials={testimonials} />
           </>
         );
       case 'about':
-        return <AboutUsPage destinationCount={packages.length} />;
+        return <AboutUsPage destinationCount={packages.length} stats={siteStats} />;
       case 'packages':
         const sortedPackages = [...packages].sort((a,b) => a.id - b.id);
         return <PackageList packages={sortedPackages} onViewDetails={setSelectedPackage} title="All Travel Packages" showFilters={true} />;
@@ -255,6 +292,10 @@ const App: React.FC = () => {
             onSaveHomepageLayout={handleSaveHomepageLayout}
             slideshowImages={slideshowImages}
             onSaveSlideshowImages={handleSaveSlideshowImages}
+            testimonials={testimonials}
+            onSaveTestimonials={handleSaveTestimonials}
+            siteStats={siteStats}
+            onSaveSiteStats={handleSaveSiteStats}
           />
         );
       default:

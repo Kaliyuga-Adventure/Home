@@ -18,6 +18,7 @@ export interface TravelPackage {
 export type Page = 'home' | 'packages' | 'about' | 'contact' | 'login' | 'admin' | 'privacy-policy' | 'terms-and-conditions' | 'payment-policy' | 'cancellation-policy' | 'customer-login' | 'signup' | 'basic-details' | 'otp-verification' | 'profile';
 
 export interface Testimonial {
+  id: string;
   name: string;
   location: string;
   avatarUrl: string;
@@ -37,4 +38,13 @@ export interface SlideshowImage {
   id: string;
   src: string;
   alt: string;
+}
+
+export interface SiteStats {
+  happyTravelers: string;
+  destinationsExplored: string;
+  successfulTrips: string;
+  avgRating: string;
+  instagramFollowers: string;
+  googleReviews: string;
 }

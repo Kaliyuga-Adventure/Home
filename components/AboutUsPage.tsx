@@ -3,18 +3,23 @@ import React from 'react';
 import { Icon } from './Icon';
 import { WhyChooseUs } from './WhyChooseUs';
 import { Testimonials } from './Testimonials';
+import type { SiteStats, Testimonial } from '../types';
 
 interface AboutUsPageProps {
     destinationCount: number;
+    stats: SiteStats;
 }
 
-export const AboutUsPage: React.FC<AboutUsPageProps> = ({ destinationCount }) => {
-  const stats = [
+export const AboutUsPage: React.FC<AboutUsPageProps> = ({ destinationCount, stats }) => {
+  const displayStats = [
     { name: 'Destinations', value: destinationCount, icon: 'map' },
-    { name: 'Avg. Rating', value: '4.8/5', icon: 'star' },
-    { name: 'Instagram Followers', value: '15K+', icon: 'instagram' },
-    { name: 'Google Reviews', value: '500+', icon: 'google' },
+    { name: 'Avg. Rating', value: stats.avgRating, icon: 'star' },
+    { name: 'Instagram Followers', value: stats.instagramFollowers, icon: 'instagram' },
+    { name: 'Google Reviews', value: stats.googleReviews, icon: 'google' },
   ];
+  
+  // Dummy data for testimonials on this page. In a real app, you might fetch this.
+  const testimonials: Testimonial[] = []; 
 
   return (
     <div className="bg-white">
@@ -46,7 +51,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ destinationCount }) =>
       <div className="bg-gray-50 py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat) => (
+            {displayStats.map((stat) => (
               <div key={stat.name} className="flex flex-col items-center">
                  <Icon name={stat.icon as any} className="h-10 w-10 text-cyan-600" />
                 <dd className="mt-4 text-4xl font-bold tracking-tight text-gray-900">{stat.value}</dd>
@@ -60,8 +65,8 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ destinationCount }) =>
       {/* Why Choose Us Section */}
       <WhyChooseUs />
       
-      {/* Testimonials Section */}
-      <Testimonials />
+      {/* Testimonials Section needs testimonials passed to it */}
+      <Testimonials testimonials={testimonials} />
     </div>
   );
 };

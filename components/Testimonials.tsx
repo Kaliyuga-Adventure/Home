@@ -1,9 +1,17 @@
 
 import React from 'react';
-import { allTestimonials } from '../data/testimonials';
+import type { Testimonial } from '../types';
 import { Icon } from './Icon';
 
-export const Testimonials: React.FC = () => {
+interface TestimonialsProps {
+  testimonials: Testimonial[];
+}
+
+export const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
+  if (testimonials.length === 0) {
+    return null; // Don't render the section if there are no testimonials
+  }
+  
   return (
     <div className="relative isolate bg-white pb-24 sm:pb-32">
        <div className="absolute inset-x-0 top-1/2 -z-10 h-3/4 -translate-y-1/2 transform-gpu overflow-hidden opacity-30 blur-3xl" aria-hidden="true">
@@ -24,8 +32,8 @@ export const Testimonials: React.FC = () => {
         <div className="mx-auto mt-16 flow-root sm:mt-20">
             <div className="-mt-8 sm:-mx-4 sm:mt-0 sm:pl-4">
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {allTestimonials.map((testimonial, testimonialIdx) => (
-                    <div key={testimonial.name} className="break-inside-avoid pt-8">
+                {testimonials.map((testimonial) => (
+                    <div key={testimonial.id} className="break-inside-avoid pt-8">
                     <div className="h-full rounded-3xl bg-gray-50/80 p-8 backdrop-blur-sm ring-1 ring-gray-900/5">
                         <div className="flex items-center gap-x-4">
                             <img src={testimonial.avatarUrl} alt="" className="h-12 w-12 rounded-full bg-gray-50 object-cover" />

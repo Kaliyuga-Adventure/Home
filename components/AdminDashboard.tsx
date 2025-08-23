@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
-import type { TravelPackage, SlideshowImage } from '../types';
+import type { TravelPackage, SlideshowImage, Testimonial, SiteStats } from '../types';
 import { PackageForm } from './PackageForm';
 import { HomePageEditor } from './HomePageEditor';
 import { SlideshowEditor } from './SlideshowEditor';
+import { TestimonialEditor } from './TestimonialEditor';
+import { SiteDataEditor } from './SiteDataEditor';
 import { Icon } from './Icon';
 import { formatINR } from '../utils/formatting';
 
@@ -14,10 +16,19 @@ interface AdminDashboardProps {
   onSaveHomepageLayout: (ids: number[]) => void;
   slideshowImages: SlideshowImage[];
   onSaveSlideshowImages: (images: SlideshowImage[]) => void;
+  testimonials: Testimonial[];
+  onSaveTestimonials: (testimonials: Testimonial[]) => void;
+  siteStats: SiteStats;
+  onSaveSiteStats: (stats: SiteStats) => void;
 }
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ packages, onSave, onDelete, onSaveHomepageLayout, slideshowImages, onSaveSlideshowImages }) => {
-  const [view, setView] = useState<'list' | 'form' | 'homepage' | 'slideshow'>('list');
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
+    packages, onSave, onDelete, onSaveHomepageLayout, 
+    slideshowImages, onSaveSlideshowImages,
+    testimonials, onSaveTestimonials,
+    siteStats, onSaveSiteStats
+}) => {
+  const [view, setView] = useState<'list' | 'form' | 'homepage' | 'slideshow' | 'testimonials' | 'siteData'>('list');
   const [editingPackage, setEditingPackage] = useState<TravelPackage | null>(null);
   const [packageToDelete, setPackageToDelete] = useState<TravelPackage | null>(null);
 
@@ -52,11 +63,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ packages, onSave
     setView('list');
   };
 
+  const handleSaveTestimonialsAndSwitchView = (testimonials: Testimonial[]) => {
+    onSaveTestimonials(testimonials);
+    setView('list');
+  };
+  
+  const handleSaveSiteDataAndSwitchView = (stats: SiteStats) => {
+    onSaveSiteStats(stats);
+    setView('list');
+  };
+
   const PackageTable = () => (
     <>
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
         <h2 className="text-3xl font-bold text-gray-800">Content Management</h2>
-         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+         <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-wrap justify-end">
+             <button
+              onClick={() => setView('siteData')}
+              className="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
+            >
+              <Icon name="adjustments" className="h-5 w-5" />
+              <span>Edit Site Data</span>
+            </button>
+            <button
+              onClick={() => setView('testimonials')}
+              className="bg-yellow-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
+            >
+              <Icon name="users" className="h-5 w-5" />
+              <span>Edit Testimonials</span>
+            </button>
             <button
               onClick={() => setView('slideshow')}
               className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
@@ -138,6 +173,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ packages, onSave
           initialSlides={slideshowImages}
           onSave={handleSaveSlideshowAndSwitchView}
           onCancel={() => setView('list')}
+        />
+      )}
+      {view === 'testimonials' && (
+        <TestimonialEditor
+            initialTestimonials={testimonials}
+            onSave={handleSaveTestimonialsAndSwitchView}
+            onCancel={() => setView('list')}
+        />
+      )}
+      {view === 'siteData' && (
+        <SiteDataEditor
+            initialStats={siteStats}
+            onSave={handleSaveSiteDataAndSwitchView}
+            onCancel={() => setView('list')}
         />
       )}
       {packageToDelete && (
